@@ -360,8 +360,8 @@ const base=()=>location.href.split(/[?#]/)[0];
 const dkey=d=>new Date(d).toLocaleDateString("en-CA");
 function go(p){if(p=="cust"&&!SHOP){say(T[L].noshop);return}ids.forEach(i=>{$("p-"+i).classList.toggle("on",i==p)});[...$("tabs").children].forEach((b,i)=>b.classList.toggle("on",ids[i]==p));gate();agate();scrollTo(0,0)}
 function gate(){const on=$("p-own").classList.contains("on");$("gate").style.display=auth?"none":"block";$("dash").style.display=auth?"grid":"none";$("p-qr").style.display=auth&&on?"block":"none"}
-async function loadShop(){if(!SHOP||!sb)return;const {data}=await sb.from("shops").select("id,slug,name,price_bw,price_color,double_discount,cash_on,online_on,logo,auto_delete_min,paid_until").eq("slug",SHOP).maybeSingle();
-if(!data){$("shopname").textContent="⚠";say(T[L].noshop);return}
+async function loadShop(){if(!SHOP||!sb)return;const {data,error:le}=await sb.from("shops").select("id,slug,name,price_bw,price_color,double_discount,cash_on,online_on,logo,auto_delete_min,paid_until").eq("slug",SHOP).maybeSingle();
+if(!data){$("shopname").textContent="⚠";const mg="⚠ "+T[L].noshop+(le?" ["+le.message+"]":"");$("expbar").style.display="block";$("expbar").textContent=mg;say(mg);return}
 shop=data;shop.expired=new Date(data.paid_until)<new Date();if(shop.expired){$("expbar").style.display="block";$("expbar").textContent="⚠ "+T[L].expired}$("shopname").textContent="• "+data.name;if(data.logo){$("shoplogo").src=data.logo;$("shoplogo").style.display="inline-block"}P={bw:+data.price_bw,cl:+data.price_color,dd:+data.double_discount,cs:data.cash_on,on:data.online_on};calc();applyPay()}
 async function place(){const t=T[L];
 if(!shop){say(t.noshop);return}if(shop.expired){say(t.expired);return}
